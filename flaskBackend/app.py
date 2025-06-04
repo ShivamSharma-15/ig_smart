@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import random
 import requests
 from bs4 import BeautifulSoup
 import logging
@@ -28,17 +29,38 @@ def parse_ig_meta(description_content):
 
 def get_ig_profile_data(username):
     url = f"https://www.instagram.com/{username}/"
+
+    user_agents = [
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.10 Safari/605.1.1",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.3",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Trailer/93.3.8652.5",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 OPR/117.0.0.",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.1958",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.3"
+    ]
+
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        "User-Agent": random.choice(user_agents),
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive"
     }
 
-    response = requests.get(url, headers=headers)
+    try:
+        response = requests.get(url, headers=headers, timeout=15)
+    except requests.RequestException as e:
+        return None, f"Request error: {e}"
+
     if response.status_code != 200:
         return None, f"Failed to load page: {response.status_code}"
 
     soup = BeautifulSoup(response.text, "lxml")
 
-    # Extract follower/following info from og:description or description meta tags
     meta_desc = soup.find("meta", property="og:description")
     if not meta_desc:
         meta_desc = soup.find("meta", attrs={"name": "description"})
@@ -47,20 +69,16 @@ def get_ig_profile_data(username):
     if meta_desc and meta_desc.has_attr("content"):
         followers, following = parse_ig_meta(meta_desc["content"])
 
-    # Extract full name and handle from og:title
     og_title = soup.find("meta", property="og:title")
     full_name = ""
     handle = username
     if og_title and og_title.has_attr("content"):
         content = og_title["content"]
-        # Example content: "Ludwig Ahgren (@ludwigahgren) • Instagram photos and videos"
-        # Extract full name and handle from it:
         full_name_match = re.match(r"^(.*?)\s+\(@([^)]+)\)", content)
         if full_name_match:
             full_name = full_name_match.group(1).strip()
             handle = full_name_match.group(2).strip()
 
-    # Profile picture from og:image
     og_image = soup.find("meta", property="og:image")
     profile_pic_url = og_image["content"] if og_image else ""
 
