@@ -37,7 +37,7 @@ def get_ig_profile_data(username):
         return None, f"Failed to load page: {response.status_code}"
 
     soup = BeautifulSoup(response.text, "lxml")
-    app.logger.info(f"Received data: {soup}")
+
     # Extract follower/following info from og:description or description meta tags
     meta_desc = soup.find("meta", property="og:description")
     if not meta_desc:
@@ -85,6 +85,7 @@ def user_info():
 
     profile_data, error = get_ig_profile_data(username)
     if error:
+        app.logger.error(f"Error from get_ig_profile_data: {error}")
         return jsonify({"error": error}), 404
 
     return jsonify(profile_data)
