@@ -30,6 +30,7 @@ async function postForUser(username) {
       username,
     });
     const flaskData = response.data;
+    console.log(flaskData);
     await updateUserStats(flaskData);
     console.log(`Stats saved for ${username}`);
   } catch (err) {
