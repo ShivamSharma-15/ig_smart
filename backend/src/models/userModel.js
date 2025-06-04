@@ -1,7 +1,7 @@
 const pool = require("../config/db");
 
 async function fetchAllUsernames() {
-  const [rows] = await pool.query("SELECT handle FROM users");
+  const [rows] = await pool.query("SELECT handle FROM user_stats");
   return rows.map((row) => row.handle);
 }
 async function updateUser(
