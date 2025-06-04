@@ -2,8 +2,8 @@ const axios = require("axios");
 const { getUserQueue, updateUserStats } = require("../services/userService");
 
 function randomIntervalMs() {
-  const min = 1 * 60 * 60 * 1000; // 1 hour
-  const max = 2 * 60 * 60 * 1000; // 2 hours
+  const min = 2 * 60 * 60 * 1000; // 2 hour
+  const max = 3 * 60 * 60 * 1000; // 3 hours
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
