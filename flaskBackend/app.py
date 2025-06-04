@@ -75,6 +75,7 @@ def get_ig_profile_data(username):
 @app.route("/user-info", methods=["POST"])
 def user_info():
     data = request.get_json()
+    app.logger.info(f"Received data: {data}")
     if not data or "username" not in data:
         return jsonify({"error": "Missing 'username' in request body"}), 400
 
