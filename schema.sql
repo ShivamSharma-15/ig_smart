@@ -1,0 +1,1 @@
+CREATE TABLE `user_stats` ( `handle` varchar(255) NOT NULL,   `profile_pic_url` text,   `full_name` varchar(255) DEFAULT NULL,   `followers` varchar(255) DEFAULT NULL,   `following` varchar(255) DEFAULT NULL,   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,   PRIMARY KEY (`handle`) )

@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  backend2:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: node_backend2
+    working_dir: /app/backend
+    ports:
+      - "3100:3000"
+    env_file:
+      - ./backend/.env
+    restart: always
+    volumes:
+      - ./backend/uploads:/app/backend/uploads
+      - ./backend/assets:/app/backend/assets
+    networks:
+      - shared-network # External access
+      - node-flask-network # Internal-only access to Flask
+
+  flask-api:
+    build:
+      context: .
+      dockerfile: flaskBackend/Dockerfile
+    container_name: flask_backend
+    working_dir: /app/flaskBackend
+    expose:
+      - "5000" # Only for internal containers
+    restart: always
+    networks:
+      - node-flask-network # NOT attached to shared-network
+
+networks:
+  shared-network:
+    external: true
+  node-flask-network:
+    driver: bridge

@@ -1,0 +1,5 @@
+Flask==3.0.2
+requests==2.32.2
+beautifulsoup4==4.12.3
+lxml==5.2.1  # Optional but faster parsing
+gunicorn==22.0.0  # Optional for production WSGI server
