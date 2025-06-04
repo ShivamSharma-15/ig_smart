@@ -1,9 +1,6 @@
 // app.js
 const express = require("express");
 const cors = require("cors");
-const sessionMiddleware = require("./middleware/session");
-const { enforceHttps } = require("./middleware/httpsMandate.js");
-const { limiter } = require("./middleware/limiter");
 const helmet = require("helmet");
 require("dotenv").config();
 

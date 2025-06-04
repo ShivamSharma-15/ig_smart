@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    container_name: node_backend2
+    container_name: node_backend3
     working_dir: /app/backend
     ports:
       - "3100:3000"
